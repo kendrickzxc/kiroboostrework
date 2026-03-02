@@ -1,0 +1,667 @@
+<!DOCTYPE html>
+<html lang="en" class="dark">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>
+      Profile — KiroBoost
+    </title>
+    <script src="https://cdn.tailwindcss.com">
+    </script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet" />
+    <script>
+      tailwind.config = { darkMode: 'class', theme: { extend: { fontFamily: { sans: ['Inter', 'sans-serif'] } } } }
+    </script>
+    <style>
+      body { font-family: 'Inter', sans-serif; background: hsl(240 10% 3.9%); color: hsl(0 0% 98%); }
+    .input-wrap { position: relative; }
+    .input-field { background: hsl(240 3.7% 10%); border: 1.5px solid hsl(240 3.7% 18%); border-radius: 10px; padding: 12px 14px; color: hsl(0 0% 98%); font-size: 14px; width: 100%; outline: none; transition: border .15s; font-family: 'Inter', sans-serif; }
+    .input-field:focus { border-color: hsl(0 0% 55%); }
+    .input-field::placeholder { color: hsl(240 5% 40%); }
+    .input-label { position: absolute; top: -8px; left: 12px; background: hsl(240 10% 3.9%); padding: 0 4px; font-size: 10px; font-weight: 600; color: hsl(240 5% 55%); letter-spacing: .04em; text-transform: uppercase; }
+    .btn-primary { background: hsl(0 0% 98%); color: hsl(240 5.9% 10%); border-radius: 10px; padding: 12px 20px; font-weight: 600; font-size: 14px; cursor: pointer; transition: all .15s; border: none; }
+    .btn-primary:hover { background: hsl(0 0% 85%); }
+    .btn-secondary { background: hsl(240 3.7% 15.9%); color: hsl(0 0% 98%); border-radius: 10px; padding: 12px 20px; font-weight: 500; font-size: 14px; cursor: pointer; transition: all .15s; border: 1px solid hsl(240 3.7% 20%); }
+    .btn-secondary:hover { background: hsl(240 3.7% 20%); }
+    .btn-danger { background: hsl(0 70% 12%); color: hsl(0 70% 60%); border-radius: 10px; padding: 12px 20px; font-weight: 500; font-size: 14px; cursor: pointer; transition: all .15s; border: 1px solid hsl(0 70% 20%); }
+    .section-card { background: hsl(240 3.7% 8%); border: 1px solid hsl(240 3.7% 15.9%); border-radius: 14px; overflow: hidden; }
+    .section-row { padding: 14px 16px; border-bottom: 1px solid hsl(240 3.7% 13%); display: flex; align-items: center; justify-content: space-between; cursor: pointer; transition: background .15s; }
+    .section-row:last-child { border-bottom: none; }
+    .section-row:active { background: hsl(240 3.7% 12%); }
+    .desktop-warning { display: none; }
+    @media (min-width: 768px) { .desktop-warning { display: flex; } .profile-content { display: none; } }
+    .toast { position: fixed; bottom: 80px; left: 50%; transform: translateX(-50%); background: hsl(240 3.7% 12%); border: 1px solid hsl(240 3.7% 20%); border-radius: 10px; padding: 12px 20px; font-size: 13px; font-weight: 500; z-index: 9999; min-width: 200px; text-align: center; transition: all .3s; opacity: 0; pointer-events: none; }
+    .toast.show { opacity: 1; }
+    .toast.success { border-color: hsl(142 70% 25%); color: hsl(142 70% 60%); }
+    .toast.error { border-color: hsl(0 70% 25%); color: hsl(0 70% 60%); }
+
+    /* Avatar Border Effects */
+    .border-none .avatar-ring { display: none; }
+    .border-nitro .avatar-ring { background: conic-gradient(from 0deg, #fff176, #ff6b35, #e040fb, #40c4ff, #69f0ae, #fff176); animation: spin 3s linear infinite; }
+    .border-fire .avatar-ring { background: conic-gradient(from 0deg, #ff9800, #f44336, #ff5722, #ffeb3b, #ff9800); animation: spin 2s linear infinite; }
+    .border-ice .avatar-ring { background: conic-gradient(from 0deg, #b3e5fc, #4fc3f7, #0288d1, #b3e5fc); animation: spin 4s linear infinite; }
+    .border-gold .avatar-ring { background: conic-gradient(from 0deg, #ffd700, #ffb300, #ff8f00, #ffd700); animation: spin 2.5s linear infinite; }
+    .border-white .avatar-ring { background: white; }
+    .border-animated .avatar-ring { background: conic-gradient(from 0deg, #fff, #555, #fff, #555); animation: spin 2s linear infinite; }
+    @keyframes spin { to { transform: rotate(360deg); } }
+    .avatar-container { position: relative; width: 80px; height: 80px; }
+    .avatar-ring { position: absolute; inset: -3px; border-radius: 50%; }
+    .avatar-inner { position: absolute; inset: 3px; border-radius: 50%; background: hsl(240 10% 3.9%); overflow: hidden; z-index: 1; display: flex; align-items: center; justify-content: center; }
+    .avatar-inner img, .avatar-inner video { width: 100%; height: 100%; object-fit: cover; }
+    .status-dot { position: absolute; bottom: 4px; right: 4px; width: 14px; height: 14px; border-radius: 50%; border: 2px solid hsl(240 10% 3.9%); z-index: 2; }
+    .badge-chip { display: inline-flex; align-items: center; gap: 4px; padding: 3px 8px; border-radius: 6px; font-size: 11px; font-weight: 600; background: hsl(240 3.7% 15%); border: 1px solid hsl(240 3.7% 22%); }
+    select.input-field { cursor: pointer; } option { background: hsl(240 3.7% 12%); }
+    ::-webkit-scrollbar { width: 4px; } ::-webkit-scrollbar-track { background: transparent; } ::-webkit-scrollbar-thumb { background: hsl(240 3.7% 25%); border-radius: 4px; }
+    .border-picker { display: grid; grid-template-columns: repeat(4, 1fr); gap: 10px; }
+    .border-opt { display: flex; flex-direction: column; align-items: center; gap: 6px; cursor: pointer; }
+    .border-opt-ring { width: 46px; height: 46px; border-radius: 50%; padding: 2px; }
+    .border-opt-inner { width: 100%; height: 100%; border-radius: 50%; background: hsl(240 3.7% 15%); }
+    .border-opt span { font-size: 10px; color: hsl(240 5% 55%); font-weight: 500; }
+    .border-opt.selected span { color: white; }
+    .border-opt.selected .border-opt-ring { outline: 2px solid white; outline-offset: 2px; }
+    </style>
+  </head>
+  <body>
+    <!-- Desktop Warning -->
+    <div class="desktop-warning fixed inset-0 z-50 items-center justify-center bg-black/95 backdrop-blur-md">
+      <div class="text-center max-w-sm px-8">
+        <div class="text-5xl mb-6">
+          📱
+        </div>
+        <h2 class="text-xl font-semibold mb-3">
+          Mobile Only
+        </h2>
+        <p class="text-sm text-zinc-400 leading-relaxed">
+          KiroBoost is designed for mobile devices. Please open this app on your phone.
+        </p>
+      </div>
+    </div>
+    <!-- Profile Content -->
+    <div class="profile-content min-h-screen pb-6">
+      <!-- Auth Loading -->
+      <div id="auth-loading" class="fixed inset-0 z-40 bg-[hsl(240_10%_3.9%)] flex items-center justify-center">
+        <div class="text-sm text-zinc-500">
+          Loading...
+        </div>
+      </div>
+      <!-- Header -->
+      <header class="sticky top-0 z-30 border-b border-zinc-800 bg-[hsl(240_10%_3.9%)]/95 backdrop-blur">
+        <div class="flex items-center gap-3 px-4 h-14">
+          <a href="index.html" class="p-2 rounded-lg hover:bg-zinc-800 transition-colors -ml-2">          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <polyline points="15 18 9 12 15 6">
+            </polyline>
+          </svg>
+</a>
+          <span class="text-base font-bold">          Profile
+</span>
+        </div>
+      </header>
+      <!-- Profile Banner -->
+      <div id="profile-banner" class="w-full h-28 relative" style="background: #111111;">
+        <div class="absolute inset-0 bg-gradient-to-b from-transparent to-black/60">
+        </div>
+      </div>
+      <!-- Profile Header Section -->
+      <div class="px-4 -mt-10 mb-5 relative z-10">
+        <div class="flex items-end justify-between">
+          <div id="avatar-wrapper" class="avatar-container border-none">
+            <div class="avatar-ring">
+            </div>
+            <div class="avatar-inner text-2xl font-bold" id="profile-avatar">
+              ?
+            </div>
+            <div id="status-indicator" class="status-dot bg-green-400">
+            </div>
+          </div>
+          <button onclick="openEditModal()" class="btn-secondary text-xs px-4 py-2.5 mt-auto">
+            Edit Profile
+          </button>
+        </div>
+        <!-- Name & Status -->
+        <div class="mt-3">
+          <div class="flex items-center gap-2 flex-wrap">
+            <h1 class="text-xl font-bold" id="display-username">
+              —
+            </h1>
+            <div id="plan-badge" class="badge-chip text-xs hidden">
+              <span>              ✨
+</span>
+              <span>              Premium
+</span>
+            </div>
+          </div>
+          <div class="flex items-center gap-1.5 mt-1 text-sm text-zinc-400" id="status-display">
+            <span id="status-emoji-display">            🟢
+</span>
+            <span id="status-text-display">            online
+</span>
+          </div>
+        </div>
+        <!-- About Me -->
+        <div id="bio-section" class="mt-4 hidden">
+          <div class="text-xs font-semibold text-zinc-400 uppercase tracking-widest mb-1.5">
+            About Me
+          </div>
+          <p class="text-sm text-zinc-300 leading-relaxed" id="bio-display">
+          </p>
+        </div>
+        <!-- Sticker -->
+        <div id="sticker-section" class="mt-3 hidden">
+          <img id="sticker-display" src="" alt="sticker" class="w-20 h-20 object-contain rounded-xl" />
+        </div>
+        <!-- Stats Row -->
+        <div class="flex items-center gap-4 mt-4 pb-4 border-b border-zinc-800">
+          <div class="text-center">
+            <div class="text-lg font-bold" id="profile-shares">
+              0
+            </div>
+            <div class="text-xs text-zinc-500">
+              Shares
+            </div>
+          </div>
+          <div class="text-center">
+            <div class="text-lg font-bold" id="profile-cookies">
+              0
+            </div>
+            <div class="text-xs text-zinc-500">
+              Cookies
+            </div>
+          </div>
+          <div class="text-center">
+            <div class="text-xs text-zinc-500 text-sm font-medium" id="profile-joined">
+              —
+            </div>
+            <div class="text-xs text-zinc-500">
+              Joined
+            </div>
+          </div>
+        </div>
+      </div>
+      <!-- Settings Sections -->
+      <div class="px-4 space-y-4">
+        <!-- Account -->
+        <div>
+          <div class="text-xs font-semibold text-zinc-500 uppercase tracking-widest mb-2 px-1">
+            Account
+          </div>
+          <div class="section-card">
+            <div class="section-row" onclick="location.href='inbox.html'">
+              <div class="flex items-center gap-3">
+                <div class="w-8 h-8 rounded-lg bg-zinc-800 flex items-center justify-center">
+                  <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2-2-2z">
+                    </path>
+                    <polyline points="22,6 12,13 2,6">
+                    </polyline>
+                  </svg>
+                </div>
+                <span class="text-sm font-medium">                Inbox
+</span>
+              </div>
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <polyline points="9 18 15 12 9 6">
+                </polyline>
+              </svg>
+            </div>
+            <div class="section-row" onclick="location.href='orders.html'">
+              <div class="flex items-center gap-3">
+                <div class="w-8 h-8 rounded-lg bg-zinc-800 flex items-center justify-center">
+                  <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <path d="M9 11l3 3L22 4">
+                    </path>
+                    <path d="M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11">
+                    </path>
+                  </svg>
+                </div>
+                <span class="text-sm font-medium">                My Orders
+</span>
+              </div>
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <polyline points="9 18 15 12 9 6">
+                </polyline>
+              </svg>
+            </div>
+            <div class="section-row" onclick="location.href='cookies.html'">
+              <div class="flex items-center gap-3">
+                <div class="w-8 h-8 rounded-lg bg-zinc-800 flex items-center justify-center">
+                  <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <path d="M12 2a10 10 0 1 0 10 10 4 4 0 0 1-5-5 4 4 0 0 1-5-5">
+                    </path>
+                  </svg>
+                </div>
+                <span class="text-sm font-medium">                Manage Cookies
+</span>
+              </div>
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <polyline points="9 18 15 12 9 6">
+                </polyline>
+              </svg>
+            </div>
+          </div>
+        </div>
+        <!-- Admin -->
+        <div id="admin-section" class="hidden">
+          <div class="text-xs font-semibold text-zinc-500 uppercase tracking-widest mb-2 px-1">
+            Admin
+          </div>
+          <div class="section-card">
+            <div class="section-row" onclick="location.href='admin.html'">
+              <div class="flex items-center gap-3">
+                <div class="w-8 h-8 rounded-lg bg-zinc-800 flex items-center justify-center">
+                  <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z">
+                    </path>
+                  </svg>
+                </div>
+                <span class="text-sm font-medium">                Admin Panel
+</span>
+              </div>
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <polyline points="9 18 15 12 9 6">
+                </polyline>
+              </svg>
+            </div>
+          </div>
+        </div>
+        <!-- Sign Out -->
+        <button onclick="signOut()" class="btn-danger w-full mt-2">
+          Sign Out
+        </button>
+      </div>
+    </div>
+    <!-- Edit Profile Modal -->
+    <div id="edit-modal" class="fixed inset-0 z-50 hidden overflow-y-auto">
+      <div class="absolute inset-0 bg-black/70 backdrop-blur-sm" onclick="closeEditModal()">
+      </div>
+      <div class="relative min-h-screen flex items-end">
+        <div class="w-full bg-[hsl(240_3.7%_8%)] border border-zinc-800 rounded-t-2xl px-5 pt-4 pb-10" style="max-height:90vh; overflow-y:auto;">
+          <div class="w-10 h-1 bg-zinc-700 rounded-full mx-auto mb-4">
+          </div>
+          <h3 class="text-base font-bold mb-5">
+            Edit Profile
+          </h3>
+          <div class="space-y-4">
+            <!-- Profile Image -->
+            <div>
+              <div class="text-xs font-semibold text-zinc-400 uppercase tracking-widest mb-2">
+                Profile Picture
+              </div>
+              <div class="flex gap-2">
+                <button onclick="document.getElementById('img-file').click()" class="btn-secondary text-xs py-2 px-3 flex-1">
+                  Upload File
+                </button>
+                <button onclick="toggleUrlInput()" class="btn-secondary text-xs py-2 px-3 flex-1">
+                  Use URL / GIF
+                </button>
+              </div>
+              <input type="file" id="img-file" accept="image/*,.gif" class="hidden" onchange="handleImageUpload(event)" />
+              <div id="url-input-section" class="mt-2 hidden">
+                <input type="url" id="img-url" placeholder="https://example.com/avatar.gif" class="input-field text-sm" />
+                <button onclick="applyImageUrl()" class="btn-secondary text-xs py-2 px-3 mt-2 w-full">
+                  Apply URL
+                </button>
+              </div>
+            </div>
+            <!-- About Me -->
+            <div class="input-wrap">
+              <span class="input-label">              About Me
+</span>
+              <textarea id="edit-bio" rows="3" maxlength="300" placeholder="Tell others about yourself..." class="input-field resize-none" style="resize:none">
+              </textarea>
+            </div>
+            <!-- Status -->
+            <div>
+              <div class="text-xs font-semibold text-zinc-400 uppercase tracking-widest mb-2">
+                Status
+              </div>
+              <div class="grid grid-cols-2 gap-2 mb-2">
+                <button onclick="setStatus('🟢','online')" class="status-preset flex items-center gap-2 p-2.5 rounded-lg bg-zinc-800 text-sm hover:bg-zinc-700 transition-colors">
+                  🟢 Online
+                </button>
+                <button onclick="setStatus('🌙','idle')" class="status-preset flex items-center gap-2 p-2.5 rounded-lg bg-zinc-800 text-sm hover:bg-zinc-700 transition-colors">
+                  🌙 Idle
+                </button>
+                <button onclick="setStatus('⛔','busy')" class="status-preset flex items-center gap-2 p-2.5 rounded-lg bg-zinc-800 text-sm hover:bg-zinc-700 transition-colors">
+                  ⛔ Busy
+                </button>
+                <button onclick="setStatus('🔴','do not disturb')" class="status-preset flex items-center gap-2 p-2.5 rounded-lg bg-zinc-800 text-sm hover:bg-zinc-700 transition-colors">
+                  🔴 Do Not Disturb
+                </button>
+                <button onclick="setStatus('👻','invisible')" class="status-preset flex items-center gap-2 p-2.5 rounded-lg bg-zinc-800 text-sm hover:bg-zinc-700 transition-colors">
+                  👻 Invisible
+                </button>
+                <button onclick="setStatus('🏖️','on vacation')" class="status-preset flex items-center gap-2 p-2.5 rounded-lg bg-zinc-800 text-sm hover:bg-zinc-700 transition-colors">
+                  🏖️ Vacation
+                </button>
+              </div>
+              <div class="flex gap-2">
+                <input type="text" id="edit-status-emoji" placeholder="😊" class="input-field w-16 text-center" maxlength="4" />
+                <input type="text" id="edit-status" placeholder="Custom status..." class="input-field flex-1" maxlength="100" />
+              </div>
+            </div>
+            <!-- Avatar Border -->
+            <div>
+              <div class="text-xs font-semibold text-zinc-400 uppercase tracking-widest mb-3">
+                Avatar Border
+              </div>
+              <div class="border-picker">
+                <div class="border-opt" onclick="selectBorder('none')" id="border-opt-none">
+                  <div class="border-opt-ring bg-zinc-800">
+                    <div class="border-opt-inner">
+                    </div>
+                  </div>
+                  <span>                  None
+</span>
+                </div>
+                <div class="border-opt" onclick="selectBorder('nitro')" id="border-opt-nitro">
+                  <div class="border-opt-ring" style="background:conic-gradient(from 0deg,#fff176,#ff6b35,#e040fb,#40c4ff,#69f0ae,#fff176)">
+                    <div class="border-opt-inner">
+                    </div>
+                  </div>
+                  <span>                  Rainbow
+</span>
+                </div>
+                <div class="border-opt" onclick="selectBorder('fire')" id="border-opt-fire">
+                  <div class="border-opt-ring" style="background:conic-gradient(from 0deg,#ff9800,#f44336,#ffeb3b,#ff9800)">
+                    <div class="border-opt-inner">
+                    </div>
+                  </div>
+                  <span>                  Fire
+</span>
+                </div>
+                <div class="border-opt" onclick="selectBorder('ice')" id="border-opt-ice">
+                  <div class="border-opt-ring" style="background:conic-gradient(from 0deg,#b3e5fc,#0288d1,#b3e5fc)">
+                    <div class="border-opt-inner">
+                    </div>
+                  </div>
+                  <span>                  Ice
+</span>
+                </div>
+                <div class="border-opt" onclick="selectBorder('gold')" id="border-opt-gold">
+                  <div class="border-opt-ring" style="background:conic-gradient(from 0deg,#ffd700,#ff8f00,#ffd700)">
+                    <div class="border-opt-inner">
+                    </div>
+                  </div>
+                  <span>                  Gold
+</span>
+                </div>
+                <div class="border-opt" onclick="selectBorder('white')" id="border-opt-white">
+                  <div class="border-opt-ring bg-white">
+                    <div class="border-opt-inner">
+                    </div>
+                  </div>
+                  <span>                  White
+</span>
+                </div>
+                <div class="border-opt" onclick="selectBorder('animated')" id="border-opt-animated">
+                  <div class="border-opt-ring" style="background:conic-gradient(from 0deg,#fff,#444,#fff,#444)">
+                    <div class="border-opt-inner">
+                    </div>
+                  </div>
+                  <span>                  Pulse
+</span>
+                </div>
+              </div>
+            </div>
+            <!-- Sticker -->
+            <div class="input-wrap">
+              <span class="input-label">              Sticker URL
+</span>
+              <input type="url" id="edit-sticker" placeholder="https://... (image URL)" class="input-field" />
+            </div>
+            <!-- Banner Color -->
+            <div>
+              <div class="text-xs font-semibold text-zinc-400 uppercase tracking-widest mb-2">
+                Banner Color
+              </div>
+              <div class="flex items-center gap-3">
+                <input type="color" id="edit-banner" value="#111111" class="w-10 h-10 rounded-lg cursor-pointer bg-transparent border border-zinc-700" />
+                <input type="text" id="edit-banner-text" placeholder="#111111" class="input-field flex-1" oninput="syncColor('banner')" />
+              </div>
+            </div>
+          </div>
+          <div class="flex gap-3 mt-6">
+            <button onclick="closeEditModal()" class="btn-secondary flex-1">
+              Cancel
+            </button>
+            <button onclick="saveProfile()" class="btn-primary flex-1">
+              Save
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+    <!-- Toast -->
+    <div id="toast" class="toast">
+    </div>
+    <!-- Bottom Nav -->
+    <nav class="fixed bottom-0 left-0 right-0 border-t border-zinc-800 bg-[hsl(240_10%_3.9%)]/95 backdrop-blur z-20">
+      <div class="flex items-center justify-around px-2 py-2">
+        <a href="index.html" class="flex flex-col items-center gap-1 p-2 rounded-lg text-zinc-500 hover:text-white text-xs font-medium transition-colors">        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <rect x="3" y="3" width="7" height="7">
+          </rect>
+          <rect x="14" y="3" width="7" height="7">
+          </rect>
+          <rect x="14" y="14" width="7" height="7">
+          </rect>
+          <rect x="3" y="14" width="7" height="7">
+          </rect>
+        </svg>
+        Home
+</a>
+        <a href="orders.html" class="flex flex-col items-center gap-1 p-2 rounded-lg text-zinc-500 hover:text-white text-xs font-medium transition-colors">        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M9 11l3 3L22 4">
+          </path>
+          <path d="M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11">
+          </path>
+        </svg>
+        Orders
+</a>
+        <a href="inbox.html" class="flex flex-col items-center gap-1 p-2 rounded-lg text-zinc-500 hover:text-white text-xs font-medium transition-colors">        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2-2-2z">
+          </path>
+          <polyline points="22,6 12,13 2,6">
+          </polyline>
+        </svg>
+        Inbox
+</a>
+        <a href="profile.html" class="flex flex-col items-center gap-1 p-2 rounded-lg text-white bg-zinc-800 text-xs font-medium transition-colors">        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2">
+          </path>
+          <circle cx="12" cy="7" r="4">
+          </circle>
+        </svg>
+        Profile
+</a>
+      </div>
+    </nav>
+    <script>
+      const API = 'https://kiroboost-api-newshare.onrender.com';
+let token = localStorage.getItem('kb_token');
+let currentUser = null;
+let selectedBorder = 'none';
+
+async function apiFetch(path, options = {}) {
+  const headers = { 'Content-Type': 'application/json', ...(options.headers || {}) };
+  if (token) headers['Authorization'] = `Bearer ${token}`;
+  try {
+    const r = await fetch(API + path, { ...options, headers });
+    return await r.json();
+  } catch { return { success: false, message: 'Network error' }; }
+}
+
+function showToast(msg, type = '') {
+  const t = document.getElementById('toast');
+  t.textContent = msg;
+  t.className = 'toast show ' + type;
+  setTimeout(() => { t.className = 'toast'; }, 3000);
+}
+
+function setStatus(emoji, text) {
+  document.getElementById('edit-status-emoji').value = emoji;
+  document.getElementById('edit-status').value = text;
+  document.querySelectorAll('.status-preset').forEach(b => b.classList.remove('ring-1', 'ring-white'));
+  event.currentTarget.classList.add('ring-1', 'ring-white');
+}
+
+function selectBorder(name) {
+  selectedBorder = name;
+  document.querySelectorAll('.border-opt').forEach(o => o.classList.remove('selected'));
+  document.getElementById('border-opt-' + name)?.classList.add('selected');
+}
+
+function updateAvatarBorder(name) {
+  const wrapper = document.getElementById('avatar-wrapper');
+  wrapper.className = 'avatar-container border-' + name;
+}
+
+function updateStatusDot(emoji) {
+  const dot = document.getElementById('status-indicator');
+  const map = { '🟢': 'bg-green-400', '🌙': 'bg-yellow-400', '⛔': 'bg-red-500', '🔴': 'bg-red-600', '👻': 'bg-zinc-600', '🏖️': 'bg-orange-400' };
+  const colors = Object.values(map).join(' ');
+  dot.className = 'status-dot ' + (map[emoji] || 'bg-green-400');
+}
+
+function renderProfile(user) {
+  document.getElementById('display-username').textContent = user.username;
+  document.getElementById('profile-shares').textContent = (user.totalShares || 0).toLocaleString();
+  document.getElementById('profile-cookies').textContent = user.cookieCount || 0;
+
+  const banner = document.getElementById('profile-banner');
+  banner.style.background = user.bannerColor || '#111111';
+
+  if (user.plan === 'premium') {
+    document.getElementById('plan-badge').classList.remove('hidden');
+  }
+
+  const av = document.getElementById('profile-avatar');
+  const imgSrc = user.profileImageUrl || user.profileImage;
+  if (imgSrc) {
+    av.innerHTML = `<img src="${imgSrc}" alt="avatar" style="width:100%;height:100%;object-fit:cover;border-radius:50%;" />`;
+  } else {
+    av.textContent = user.username.charAt(0).toUpperCase();
+  }
+
+  if (user.bio) {
+    document.getElementById('bio-display').textContent = user.bio;
+    document.getElementById('bio-section').classList.remove('hidden');
+  }
+
+  if (user.sticker) {
+    document.getElementById('sticker-display').src = user.sticker;
+    document.getElementById('sticker-section').classList.remove('hidden');
+  }
+
+  document.getElementById('status-emoji-display').textContent = user.statusEmoji || '🟢';
+  document.getElementById('status-text-display').textContent = user.status || 'online';
+  updateStatusDot(user.statusEmoji || '🟢');
+  updateAvatarBorder(user.avatarBorder || 'none');
+
+  if (user.isAdmin) {
+    document.getElementById('admin-section').classList.remove('hidden');
+  }
+}
+
+function openEditModal() {
+  if (!currentUser) return;
+  document.getElementById('edit-bio').value = currentUser.bio || '';
+  document.getElementById('edit-status').value = currentUser.status || 'online';
+  document.getElementById('edit-status-emoji').value = currentUser.statusEmoji || '🟢';
+  document.getElementById('edit-sticker').value = currentUser.sticker || '';
+  document.getElementById('edit-banner').value = currentUser.bannerColor || '#111111';
+  document.getElementById('edit-banner-text').value = currentUser.bannerColor || '#111111';
+  selectedBorder = currentUser.avatarBorder || 'none';
+  document.querySelectorAll('.border-opt').forEach(o => o.classList.remove('selected'));
+  document.getElementById('border-opt-' + selectedBorder)?.classList.add('selected');
+  document.getElementById('edit-modal').classList.remove('hidden');
+}
+
+function closeEditModal() {
+  document.getElementById('edit-modal').classList.add('hidden');
+  document.getElementById('url-input-section').classList.add('hidden');
+}
+
+function toggleUrlInput() {
+  document.getElementById('url-input-section').classList.toggle('hidden');
+}
+
+function syncColor(type) {
+  const val = document.getElementById('edit-' + type + '-text').value;
+  if (/^#[0-9a-fA-F]{6}$/.test(val)) {
+    document.getElementById('edit-' + type).value = val;
+  }
+}
+
+async function applyImageUrl() {
+  const url = document.getElementById('img-url').value.trim();
+  if (!url) return;
+  const data = await apiFetch('/api/user/profile/image', { method: 'POST', body: JSON.stringify({ imageUrl: url }) });
+  if (data.success) {
+    showToast('Avatar updated!', 'success');
+    currentUser.profileImageUrl = url;
+    currentUser.profileImage = null;
+    const av = document.getElementById('profile-avatar');
+    av.innerHTML = `<img src="${url}" alt="avatar" style="width:100%;height:100%;object-fit:cover;border-radius:50%;" />`;
+  } else showToast(data.message, 'error');
+}
+
+function handleImageUpload(e) {
+  const file = e.target.files[0];
+  if (!file) return;
+  const reader = new FileReader();
+  reader.onload = async function(ev) {
+    const imgData = ev.target.result;
+    const data = await apiFetch('/api/user/profile/image', { method: 'POST', body: JSON.stringify({ imageData: imgData }) });
+    if (data.success) {
+      showToast('Avatar updated!', 'success');
+      currentUser.profileImage = imgData;
+      const av = document.getElementById('profile-avatar');
+      av.innerHTML = `<img src="${imgData}" alt="avatar" style="width:100%;height:100%;object-fit:cover;border-radius:50%;" />`;
+    } else showToast(data.message, 'error');
+  };
+  reader.readAsDataURL(file);
+}
+
+async function saveProfile() {
+  const bio = document.getElementById('edit-bio').value.trim();
+  const status = document.getElementById('edit-status').value.trim();
+  const statusEmoji = document.getElementById('edit-status-emoji').value.trim();
+  const sticker = document.getElementById('edit-sticker').value.trim();
+  const bannerColor = document.getElementById('edit-banner').value;
+  const avatarBorder = selectedBorder;
+
+  const data = await apiFetch('/api/user/profile', {
+    method: 'PUT',
+    body: JSON.stringify({ bio, status, statusEmoji, avatarBorder, sticker: sticker || null, bannerColor })
+  });
+
+  if (data.success) {
+    showToast('Profile saved!', 'success');
+    closeEditModal();
+    Object.assign(currentUser, data.profile);
+    renderProfile({ ...currentUser, ...data.profile });
+  } else showToast(data.message, 'error');
+}
+
+function signOut() {
+  if (!confirm('Sign out?')) return;
+  localStorage.removeItem('kb_token');
+  localStorage.removeItem('kb_user');
+  location.href = 'login.html';
+}
+
+async function init() {
+  if (!token) { location.href = 'login.html'; return; }
+  const data = await apiFetch('/api/user/stats');
+  if (!data.success) { localStorage.removeItem('kb_token'); location.href = 'login.html'; return; }
+  currentUser = { ...data.stats };
+  const cookieData = await apiFetch('/api/user/cookies');
+  currentUser.cookieCount = cookieData.count || 0;
+  renderProfile(currentUser);
+  document.getElementById('auth-loading').style.display = 'none';
+}
+
+init();
+    </script>
+  </body>
+</html>
