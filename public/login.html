@@ -1,0 +1,145 @@
+<!DOCTYPE html>
+<html lang="en" class="dark">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>
+      Login — KiroBoost
+    </title>
+    <script src="https://cdn.tailwindcss.com">
+    </script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet" />
+    <script>
+      tailwind.config = { darkMode: 'class', theme: { extend: { fontFamily: { sans: ['Inter', 'sans-serif'] } } } }
+    </script>
+    <style>
+      body { font-family: 'Inter', sans-serif; background: hsl(240 10% 3.9%); color: hsl(0 0% 98%); min-height: 100vh; display: flex; flex-direction: column; }
+    .input-wrap { position: relative; }
+    .input-field { background: hsl(240 3.7% 10%); border: 1.5px solid hsl(240 3.7% 18%); border-radius: 10px; padding: 14px 16px; color: hsl(0 0% 98%); font-size: 15px; width: 100%; outline: none; transition: border .15s; font-family: 'Inter', sans-serif; }
+    .input-field:focus { border-color: hsl(0 0% 55%); background: hsl(240 3.7% 12%); }
+    .input-field::placeholder { color: hsl(240 5% 40%); }
+    .input-label { position: absolute; top: -9px; left: 12px; background: hsl(240 10% 3.9%); padding: 0 4px; font-size: 11px; font-weight: 600; color: hsl(240 5% 55%); letter-spacing: .04em; text-transform: uppercase; }
+    .btn-primary { background: hsl(0 0% 98%); color: hsl(240 5.9% 10%); border-radius: 10px; padding: 14px 20px; font-weight: 600; font-size: 15px; cursor: pointer; transition: all .15s; border: none; width: 100%; }
+    .btn-primary:hover { background: hsl(0 0% 88%); }
+    .btn-primary:disabled { opacity: 0.5; cursor: not-allowed; }
+    .error-msg { background: hsl(0 70% 8%); border: 1px solid hsl(0 70% 18%); border-radius: 8px; padding: 10px 14px; font-size: 13px; color: hsl(0 70% 60%); }
+    .desktop-warning { display: none; }
+    @media (min-width: 768px) { .desktop-warning { display: flex; } .login-content { display: none; } }
+    </style>
+  </head>
+  <body>
+    <!-- Desktop Warning -->
+    <div class="desktop-warning fixed inset-0 z-50 items-center justify-center bg-black/95 backdrop-blur-md">
+      <div class="text-center max-w-sm px-8">
+        <div class="text-5xl mb-6">
+          📱
+        </div>
+        <h2 class="text-xl font-semibold mb-3">
+          Mobile Only
+        </h2>
+        <p class="text-sm text-zinc-400 leading-relaxed">
+          KiroBoost is designed for mobile devices. Please open this app on your phone.
+        </p>
+      </div>
+    </div>
+    <div class="login-content flex-1 flex flex-col px-6 py-12">
+      <!-- Logo -->
+      <div class="mb-10">
+        <div class="text-3xl font-bold tracking-tight">
+          KiroBoost
+        </div>
+        <div class="text-sm text-zinc-500 mt-1">
+          Professional SMM Panel
+        </div>
+      </div>
+      <div class="flex-1">
+        <h2 class="text-2xl font-bold mb-1">
+          Welcome back
+        </h2>
+        <p class="text-sm text-zinc-500 mb-8">
+          Sign in to your account
+        </p>
+        <div id="error-box" class="error-msg mb-4 hidden">
+        </div>
+        <form onsubmit="doLogin(event)" class="space-y-5">
+          <div class="input-wrap">
+            <span class="input-label">            Username
+</span>
+            <input type="text" id="username" placeholder="your_username" class="input-field" autocomplete="username" autocapitalize="off" />
+          </div>
+          <div class="input-wrap">
+            <span class="input-label">            Password
+</span>
+            <input type="password" id="password" placeholder="••••••••" class="input-field" autocomplete="current-password" />
+          </div>
+          <button type="submit" class="btn-primary mt-2" id="login-btn">
+            Sign In
+          </button>
+        </form>
+        <div class="text-center mt-8">
+          <span class="text-sm text-zinc-500">          Don't have an account?
+</span>
+          <a href="signup.html" class="text-sm text-white font-medium hover:underline">          Sign up
+</a>
+        </div>
+      </div>
+      <div class="text-center mt-8">
+        <div class="text-xs text-zinc-700">
+          KiroBoost v2.0 · SMM Panel
+        </div>
+      </div>
+    </div>
+    <script>
+      const API = 'https://kiroboost-api-newshare.onrender.com';
+
+// Redirect if already logged in
+if (localStorage.getItem('kb_token')) {
+  location.href = 'index.html';
+}
+
+async function doLogin(e) {
+  e.preventDefault();
+  const username = document.getElementById('username').value.trim();
+  const password = document.getElementById('password').value;
+  const btn = document.getElementById('login-btn');
+  const errBox = document.getElementById('error-box');
+
+  errBox.classList.add('hidden');
+
+  if (!username || !password) {
+    errBox.textContent = 'Please fill in all fields.';
+    errBox.classList.remove('hidden');
+    return;
+  }
+
+  btn.disabled = true;
+  btn.textContent = 'Signing in...';
+
+  try {
+    const r = await fetch(API + '/api/auth/login', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ username, password })
+    });
+    const data = await r.json();
+
+    if (data.success) {
+      localStorage.setItem('kb_token', data.token);
+      localStorage.setItem('kb_user', JSON.stringify(data.user));
+      location.href = data.user.isAdmin ? 'admin.html' : 'index.html';
+    } else {
+      errBox.textContent = data.message || 'Login failed.';
+      errBox.classList.remove('hidden');
+      btn.disabled = false;
+      btn.textContent = 'Sign In';
+    }
+  } catch {
+    errBox.textContent = 'Network error. Check your connection.';
+    errBox.classList.remove('hidden');
+    btn.disabled = false;
+    btn.textContent = 'Sign In';
+  }
+}
+    </script>
+  </body>
+</html>
