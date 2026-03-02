@@ -1,0 +1,719 @@
+<!DOCTYPE html>
+<html lang="en" class="dark">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>
+      KiroBoost — Professional SMM Panel
+    </title>
+    <meta name="description" content="KiroBoost - Professional Social Media Marketing Panel for Facebook Boosting" />
+    <script src="https://cdn.tailwindcss.com">
+    </script>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet" />
+    <script>
+      tailwind.config = {
+      darkMode: 'class',
+      theme: {
+        extend: {
+          fontFamily: { sans: ['Inter', 'sans-serif'] },
+          colors: {
+            border: 'hsl(240 3.7% 15.9%)',
+            input: 'hsl(240 3.7% 15.9%)',
+            ring: 'hsl(240 4.9% 83.9%)',
+            background: 'hsl(240 10% 3.9%)',
+            foreground: 'hsl(0 0% 98%)',
+            primary: { DEFAULT: 'hsl(0 0% 98%)', foreground: 'hsl(240 5.9% 10%)' },
+            secondary: { DEFAULT: 'hsl(240 3.7% 15.9%)', foreground: 'hsl(0 0% 98%)' },
+            muted: { DEFAULT: 'hsl(240 3.7% 15.9%)', foreground: 'hsl(240 5% 64.9%)' },
+            accent: { DEFAULT: 'hsl(240 3.7% 15.9%)', foreground: 'hsl(0 0% 98%)' },
+            card: { DEFAULT: 'hsl(240 10% 3.9%)', foreground: 'hsl(0 0% 98%)' },
+          }
+        }
+      }
+    }
+    </script>
+    <style>
+      body { font-family: 'Inter', sans-serif; background: hsl(240 10% 3.9%); color: hsl(0 0% 98%); }
+    .card { background: hsl(240 3.7% 8%); border: 1px solid hsl(240 3.7% 15.9%); border-radius: 12px; }
+    .btn-primary { background: hsl(0 0% 98%); color: hsl(240 5.9% 10%); border-radius: 8px; padding: 10px 20px; font-weight: 600; font-size: 14px; cursor: pointer; transition: all .15s; border: none; }
+    .btn-primary:hover { background: hsl(0 0% 85%); }
+    .btn-secondary { background: hsl(240 3.7% 15.9%); color: hsl(0 0% 98%); border-radius: 8px; padding: 10px 20px; font-weight: 500; font-size: 14px; cursor: pointer; transition: all .15s; border: 1px solid hsl(240 3.7% 20%); }
+    .btn-secondary:hover { background: hsl(240 3.7% 20%); }
+    .badge { display: inline-flex; align-items: center; padding: 2px 8px; border-radius: 9999px; font-size: 11px; font-weight: 600; }
+    .badge-green { background: hsl(142 70% 10%); color: hsl(142 70% 50%); border: 1px solid hsl(142 70% 20%); }
+    .badge-yellow { background: hsl(48 90% 10%); color: hsl(48 90% 55%); border: 1px solid hsl(48 90% 20%); }
+    .badge-red { background: hsl(0 70% 10%); color: hsl(0 70% 55%); border: 1px solid hsl(0 70% 20%); }
+    .badge-blue { background: hsl(210 70% 10%); color: hsl(210 70% 55%); border: 1px solid hsl(210 70% 20%); }
+    .nav-item { display: flex; flex-direction: column; align-items: center; gap: 4px; padding: 8px 16px; border-radius: 8px; cursor: pointer; transition: all .15s; color: hsl(240 5% 64.9%); font-size: 11px; font-weight: 500; text-decoration: none; }
+    .nav-item:hover, .nav-item.active { color: hsl(0 0% 98%); background: hsl(240 3.7% 15.9%); }
+    .desktop-warning { display: none; }
+    @media (min-width: 768px) { .desktop-warning { display: flex; } .main-app { display: none; } }
+    .stat-card { background: hsl(240 3.7% 8%); border: 1px solid hsl(240 3.7% 15.9%); border-radius: 12px; padding: 20px; }
+    .divider { border-color: hsl(240 3.7% 15.9%); }
+    .input-field { background: hsl(240 3.7% 12%); border: 1px solid hsl(240 3.7% 18%); border-radius: 8px; padding: 10px 14px; color: hsl(0 0% 98%); font-size: 14px; width: 100%; outline: none; transition: border .15s; font-family: 'Inter', sans-serif; }
+    .input-field:focus { border-color: hsl(0 0% 50%); }
+    .input-field::placeholder { color: hsl(240 5% 45%); }
+    .shimmer { background: linear-gradient(90deg, hsl(240 3.7% 12%) 25%, hsl(240 3.7% 18%) 50%, hsl(240 3.7% 12%) 75%); background-size: 200% 100%; animation: shimmer 1.5s infinite; }
+    @keyframes shimmer { 0% { background-position: 200% 0; } 100% { background-position: -200% 0; } }
+    .toast { position: fixed; bottom: 80px; left: 50%; transform: translateX(-50%); background: hsl(240 3.7% 12%); border: 1px solid hsl(240 3.7% 20%); border-radius: 10px; padding: 12px 20px; font-size: 13px; font-weight: 500; z-index: 9999; min-width: 200px; text-align: center; transition: all .3s; opacity: 0; pointer-events: none; }
+    .toast.show { opacity: 1; }
+    .toast.success { border-color: hsl(142 70% 25%); color: hsl(142 70% 60%); }
+    .toast.error { border-color: hsl(0 70% 25%); color: hsl(0 70% 60%); }
+    .order-row { border-bottom: 1px solid hsl(240 3.7% 13%); }
+    .order-row:last-child { border-bottom: none; }
+    select.input-field { cursor: pointer; }
+    option { background: hsl(240 3.7% 12%); }
+    ::-webkit-scrollbar { width: 4px; } ::-webkit-scrollbar-track { background: transparent; } ::-webkit-scrollbar-thumb { background: hsl(240 3.7% 25%); border-radius: 4px; }
+    </style>
+  </head>
+  <body>
+    <!-- Desktop Warning -->
+    <div class="desktop-warning fixed inset-0 z-50 items-center justify-center bg-black/95 backdrop-blur-md">
+      <div class="text-center max-w-sm px-8">
+        <div class="text-5xl mb-6">
+          📱
+        </div>
+        <h2 class="text-xl font-semibold mb-3">
+          Mobile Only
+        </h2>
+        <p class="text-sm text-zinc-400 leading-relaxed">
+          KiroBoost is designed for mobile devices. Please open this app on your phone for the best experience.
+        </p>
+        <div class="mt-6 px-4 py-2 bg-zinc-800 rounded-lg text-xs text-zinc-500 font-mono">
+          kiroboost-api.onrender.com
+        </div>
+      </div>
+    </div>
+    <!-- Main App -->
+    <div class="main-app min-h-screen pb-20" id="app">
+      <!-- Auth Check Loading -->
+      <div id="auth-loading" class="fixed inset-0 z-40 bg-[hsl(240_10%_3.9%)] flex items-center justify-center">
+        <div class="text-center">
+          <div class="text-3xl font-bold tracking-tight mb-2">
+            KiroBoost
+          </div>
+          <div class="text-xs text-zinc-500">
+            Loading...
+          </div>
+        </div>
+      </div>
+      <!-- Header -->
+      <header class="sticky top-0 z-30 border-b border-zinc-800 bg-[hsl(240_10%_3.9%)]/95 backdrop-blur">
+        <div class="flex items-center justify-between px-4 h-14">
+          <div class="text-base font-bold tracking-tight">
+            KiroBoost
+          </div>
+          <div class="flex items-center gap-3">
+            <button onclick="location.href='inbox.html'" class="relative p-2 rounded-lg hover:bg-zinc-800 transition-colors">
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2-2-2z">
+                </path>
+                <polyline points="22,6 12,13 2,6">
+                </polyline>
+              </svg>
+              <span id="inbox-badge" class="absolute top-1 right-1 w-2 h-2 bg-white rounded-full hidden"></span>
+            </button>
+            <button onclick="location.href='profile.html'" class="w-8 h-8 rounded-full overflow-hidden bg-zinc-800 border border-zinc-700 flex items-center justify-center text-xs font-bold" id="header-avatar">
+              K
+            </button>
+          </div>
+        </div>
+      </header>
+      <!-- Content Pages -->
+      <!-- Dashboard Page -->
+      <div id="page-dashboard" class="page px-4 pt-4">
+        <div class="mb-5">
+          <p class="text-xs text-zinc-500 mb-1">
+            Welcome back
+          </p>
+          <h1 class="text-xl font-bold" id="user-greeting">
+            Loading...
+          </h1>
+        </div>
+        <!-- Stats -->
+        <div class="grid grid-cols-2 gap-3 mb-5">
+          <div class="stat-card">
+            <div class="text-xs text-zinc-500 mb-1">
+              Total Shares
+            </div>
+            <div class="text-2xl font-bold" id="stat-shares">
+              —
+            </div>
+          </div>
+          <div class="stat-card">
+            <div class="text-xs text-zinc-500 mb-1">
+              Cookies
+            </div>
+            <div class="text-2xl font-bold" id="stat-cookies">
+              —
+            </div>
+          </div>
+        </div>
+        <!-- Quick Actions -->
+        <div class="card p-4 mb-4">
+          <h3 class="text-xs font-semibold text-zinc-400 uppercase tracking-widest mb-3">
+            Quick Actions
+          </h3>
+          <div class="grid grid-cols-2 gap-3">
+            <button onclick="showPage('orders')" class="flex flex-col items-center gap-2 p-4 rounded-xl bg-zinc-800/60 hover:bg-zinc-800 transition-colors">
+              <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <circle cx="9" cy="21" r="1">
+                </circle>
+                <circle cx="20" cy="21" r="1">
+                </circle>
+                <path d="M1 1h4l2.68 13.39a2 2 0 0 0 2 1.61h9.72a2 2 0 0 0 2-1.61L23 6H6">
+                </path>
+              </svg>
+              <span class="text-xs font-medium">              New Order
+</span>
+            </button>
+            <button onclick="showPage('cookies')" class="flex flex-col items-center gap-2 p-4 rounded-xl bg-zinc-800/60 hover:bg-zinc-800 transition-colors">
+              <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <path d="M12 2a10 10 0 1 0 10 10 4 4 0 0 1-5-5 4 4 0 0 1-5-5">
+                </path>
+                <path d="M8.5 8.5v.01">
+                </path>
+                <path d="M16 15.5v.01">
+                </path>
+                <path d="M12 12v.01">
+                </path>
+              </svg>
+              <span class="text-xs font-medium">              Cookies
+</span>
+            </button>
+            <button onclick="showPage('share')" class="flex flex-col items-center gap-2 p-4 rounded-xl bg-zinc-800/60 hover:bg-zinc-800 transition-colors">
+              <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <circle cx="18" cy="5" r="3">
+                </circle>
+                <circle cx="6" cy="12" r="3">
+                </circle>
+                <circle cx="18" cy="19" r="3">
+                </circle>
+                <line x1="8.59" y1="13.51" x2="15.42" y2="17.49">
+                </line>
+                <line x1="15.41" y1="6.51" x2="8.59" y2="10.49">
+                </line>
+              </svg>
+              <span class="text-xs font-medium">              Share
+</span>
+            </button>
+            <button onclick="location.href='profile.html'" class="flex flex-col items-center gap-2 p-4 rounded-xl bg-zinc-800/60 hover:bg-zinc-800 transition-colors">
+              <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2">
+                </path>
+                <circle cx="12" cy="7" r="4">
+                </circle>
+              </svg>
+              <span class="text-xs font-medium">              Profile
+</span>
+            </button>
+          </div>
+        </div>
+        <!-- Recent Orders -->
+        <div class="card p-4">
+          <div class="flex items-center justify-between mb-3">
+            <h3 class="text-xs font-semibold text-zinc-400 uppercase tracking-widest">
+              Recent Orders
+            </h3>
+            <button onclick="showPage('orders')" class="text-xs text-zinc-400 hover:text-white transition-colors">
+              View all
+            </button>
+          </div>
+          <div id="recent-orders-list">
+            <div class="text-center py-6 text-zinc-600 text-sm">
+              Loading...
+            </div>
+          </div>
+        </div>
+      </div>
+      <!-- Orders Page -->
+      <div id="page-orders" class="page px-4 pt-4 hidden">
+        <div class="flex items-center justify-between mb-4">
+          <h2 class="text-lg font-bold">
+            Orders
+          </h2>
+          <button onclick="openOrderModal()" class="btn-primary text-xs px-3 py-2">
+            + New Order
+          </button>
+        </div>
+        <!-- Filter Tabs -->
+        <div class="flex gap-2 mb-4 overflow-x-auto pb-1">
+          <button onclick="filterOrders('all')" class="order-filter-btn px-3 py-1.5 rounded-lg text-xs font-medium whitespace-nowrap bg-zinc-100 text-zinc-900 active" data-filter="all">
+            All
+          </button>
+          <button onclick="filterOrders('pending')" class="order-filter-btn px-3 py-1.5 rounded-lg text-xs font-medium whitespace-nowrap bg-zinc-800 text-zinc-300 hover:bg-zinc-700" data-filter="pending">
+            Pending
+          </button>
+          <button onclick="filterOrders('processing')" class="order-filter-btn px-3 py-1.5 rounded-lg text-xs font-medium whitespace-nowrap bg-zinc-800 text-zinc-300 hover:bg-zinc-700" data-filter="processing">
+            Processing
+          </button>
+          <button onclick="filterOrders('completed')" class="order-filter-btn px-3 py-1.5 rounded-lg text-xs font-medium whitespace-nowrap bg-zinc-800 text-zinc-300 hover:bg-zinc-700" data-filter="completed">
+            Completed
+          </button>
+        </div>
+        <div id="orders-list">
+          <div class="text-center py-12 text-zinc-600 text-sm">
+            Loading orders...
+          </div>
+        </div>
+      </div>
+      <!-- Cookies Page -->
+      <div id="page-cookies" class="page px-4 pt-4 hidden">
+        <div class="flex items-center justify-between mb-4">
+          <h2 class="text-lg font-bold">
+            Cookies
+          </h2>
+          <button onclick="openAddCookieModal()" class="btn-primary text-xs px-3 py-2">
+            + Add
+          </button>
+        </div>
+        <div class="card p-4 mb-4">
+          <div class="flex items-center justify-between">
+            <span class="text-sm text-zinc-400">            Total Cookies
+</span>
+            <span class="text-sm font-bold" id="cookie-count-display">            0
+</span>
+          </div>
+        </div>
+        <div id="cookies-list">
+          <div class="text-center py-12 text-zinc-600 text-sm">
+            Loading cookies...
+          </div>
+        </div>
+      </div>
+      <!-- Share Page -->
+      <div id="page-share" class="page px-4 pt-4 hidden">
+        <h2 class="text-lg font-bold mb-4">
+          Share Boost
+        </h2>
+        <div class="card p-5 mb-4">
+          <label class="block text-xs text-zinc-400 mb-2 font-medium">
+            Facebook Post Link
+          </label>
+          <input type="url" id="share-url" placeholder="https://facebook.com/..." class="input-field mb-4" />
+          <label class="block text-xs text-zinc-400 mb-2 font-medium">
+            Number of Shares
+          </label>
+          <input type="number" id="share-count" placeholder="100" min="1" class="input-field mb-4" />
+          <button onclick="startSharing()" id="share-btn" class="btn-primary w-full">
+            Start Sharing
+          </button>
+        </div>
+        <div id="share-progress-section" class="card p-5 hidden">
+          <div class="flex items-center justify-between mb-3">
+            <span class="text-sm font-medium">            Progress
+</span>
+            <span class="text-sm font-bold" id="share-progress-text">            0 / 0
+</span>
+          </div>
+          <div class="w-full bg-zinc-800 rounded-full h-2 mb-3">
+            <div id="share-progress-bar" class="bg-white h-2 rounded-full transition-all duration-300" style="width: 0%">
+            </div>
+          </div>
+          <div id="share-status-text" class="text-xs text-zinc-500 text-center">
+            Initializing...
+          </div>
+        </div>
+      </div>
+    </div>
+    <!-- Bottom Navigation -->
+    <nav class="main-app fixed bottom-0 left-0 right-0 border-t border-zinc-800 bg-[hsl(240_10%_3.9%)]/95 backdrop-blur z-20">
+      <div class="flex items-center justify-around px-2 py-2">
+        <button onclick="showPage('dashboard')" class="nav-item active" id="nav-dashboard">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <rect x="3" y="3" width="7" height="7">
+            </rect>
+            <rect x="14" y="3" width="7" height="7">
+            </rect>
+            <rect x="14" y="14" width="7" height="7">
+            </rect>
+            <rect x="3" y="14" width="7" height="7">
+            </rect>
+          </svg>
+          Home
+        </button>
+        <button onclick="showPage('orders')" class="nav-item" id="nav-orders">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M9 11l3 3L22 4">
+            </path>
+            <path d="M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11">
+            </path>
+          </svg>
+          Orders
+        </button>
+        <button onclick="showPage('share')" class="nav-item" id="nav-share">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <circle cx="18" cy="5" r="3">
+            </circle>
+            <circle cx="6" cy="12" r="3">
+            </circle>
+            <circle cx="18" cy="19" r="3">
+            </circle>
+            <line x1="8.59" y1="13.51" x2="15.42" y2="17.49">
+            </line>
+            <line x1="15.41" y1="6.51" x2="8.59" y2="10.49">
+            </line>
+          </svg>
+          Share
+        </button>
+        <button onclick="showPage('cookies')" class="nav-item" id="nav-cookies">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M12 2a10 10 0 1 0 10 10 4 4 0 0 1-5-5 4 4 0 0 1-5-5">
+            </path>
+            <path d="M8.5 8.5v.01">
+            </path>
+            <path d="M16 15.5v.01">
+            </path>
+            <path d="M12 12v.01">
+            </path>
+          </svg>
+          Cookies
+        </button>
+      </div>
+    </nav>
+    <!-- New Order Modal -->
+    <div id="order-modal" class="fixed inset-0 z-50 hidden">
+      <div class="absolute inset-0 bg-black/70 backdrop-blur-sm" onclick="closeOrderModal()">
+      </div>
+      <div class="absolute bottom-0 left-0 right-0 card rounded-t-2xl rounded-b-none p-5 border-b-0">
+        <div class="w-10 h-1 bg-zinc-700 rounded-full mx-auto mb-5">
+        </div>
+        <h3 class="text-base font-bold mb-4">
+          New Order
+        </h3>
+        <div class="space-y-3">
+          <div>
+            <label class="text-xs text-zinc-400 mb-1.5 block font-medium">
+              Customer Name
+            </label>
+            <input type="text" id="order-customer" placeholder="Customer name..." class="input-field" />
+          </div>
+          <div>
+            <label class="text-xs text-zinc-400 mb-1.5 block font-medium">
+              Post Link
+            </label>
+            <input type="url" id="order-link" placeholder="https://facebook.com/..." class="input-field" />
+          </div>
+          <div class="grid grid-cols-2 gap-3">
+            <div>
+              <label class="text-xs text-zinc-400 mb-1.5 block font-medium">
+                Quantity
+              </label>
+              <input type="number" id="order-qty" placeholder="1000" min="1" class="input-field" />
+            </div>
+            <div>
+              <label class="text-xs text-zinc-400 mb-1.5 block font-medium">
+                Amount (₱)
+              </label>
+              <input type="number" id="order-amount" placeholder="0.00" step="0.01" class="input-field" />
+            </div>
+          </div>
+          <div>
+            <label class="text-xs text-zinc-400 mb-1.5 block font-medium">
+              Reference Note
+            </label>
+            <input type="text" id="order-ref" placeholder="Optional reference..." class="input-field" />
+          </div>
+          <div>
+            <label class="text-xs text-zinc-400 mb-1.5 block font-medium">
+              Speed
+            </label>
+            <select id="order-speed" class="input-field">
+              <option value="instant">
+                Instant
+              </option>
+              <option value="fast">
+                Fast
+              </option>
+              <option value="medium">
+                Medium
+              </option>
+              <option value="slow">
+                Slow
+              </option>
+            </select>
+          </div>
+        </div>
+        <div class="flex gap-3 mt-5">
+          <button onclick="closeOrderModal()" class="btn-secondary flex-1">
+            Cancel
+          </button>
+          <button onclick="submitOrder()" class="btn-primary flex-1">
+            Create Order
+          </button>
+        </div>
+      </div>
+    </div>
+    <!-- Add Cookie Modal -->
+    <div id="cookie-modal" class="fixed inset-0 z-50 hidden">
+      <div class="absolute inset-0 bg-black/70 backdrop-blur-sm" onclick="closeAddCookieModal()">
+      </div>
+      <div class="absolute bottom-0 left-0 right-0 card rounded-t-2xl rounded-b-none p-5 border-b-0">
+        <div class="w-10 h-1 bg-zinc-700 rounded-full mx-auto mb-5">
+        </div>
+        <h3 class="text-base font-bold mb-2">
+          Add Facebook Cookie
+        </h3>
+        <p class="text-xs text-zinc-500 mb-4">
+          Paste your Facebook cookie string. It will be validated automatically.
+        </p>
+        <textarea id="cookie-input" rows="5" placeholder="Paste cookie here..." class="input-field resize-none mb-4" style="resize:none">
+        </textarea>
+        <div class="flex gap-3">
+          <button onclick="closeAddCookieModal()" class="btn-secondary flex-1">
+            Cancel
+          </button>
+          <button onclick="submitCookie()" class="btn-primary flex-1">
+            Add Cookie
+          </button>
+        </div>
+      </div>
+    </div>
+    <!-- Toast -->
+    <div id="toast" class="toast">
+    </div>
+    <script>
+      const API = 'https://kiroboost-api-newshare.onrender.com';
+let token = localStorage.getItem('kb_token');
+let currentUser = null;
+let allOrders = [];
+
+async function apiFetch(path, options = {}) {
+  const headers = { 'Content-Type': 'application/json', ...(options.headers || {}) };
+  if (token) headers['Authorization'] = `Bearer ${token}`;
+  try {
+    const r = await fetch(API + path, { ...options, headers });
+    return await r.json();
+  } catch (e) {
+    return { success: false, message: 'Network error' };
+  }
+}
+
+function showToast(msg, type = '') {
+  const t = document.getElementById('toast');
+  t.textContent = msg;
+  t.className = 'toast show ' + type;
+  setTimeout(() => { t.className = 'toast'; }, 3000);
+}
+
+function showPage(page) {
+  document.querySelectorAll('.page').forEach(p => p.classList.add('hidden'));
+  document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
+  const el = document.getElementById('page-' + page);
+  const nav = document.getElementById('nav-' + page);
+  if (el) el.classList.remove('hidden');
+  if (nav) nav.classList.add('active');
+  if (page === 'orders') loadOrders();
+  if (page === 'cookies') loadCookies();
+  if (page === 'dashboard') loadDashboard();
+}
+
+function statusBadge(s) {
+  const map = { pending: 'badge-yellow', processing: 'badge-blue', completed: 'badge-green', cancelled: 'badge-red', refunded: 'badge-red', partial: 'badge-yellow' };
+  return `<span class="badge ${map[s] || 'badge-yellow'}">${s}</span>`;
+}
+
+async function loadDashboard() {
+  const data = await apiFetch('/api/user/stats');
+  if (data.success) {
+    document.getElementById('stat-shares').textContent = (data.stats.totalShares || 0).toLocaleString();
+    document.getElementById('stat-cookies').textContent = data.stats.cookieCount || 0;
+  }
+  const orders = await apiFetch('/api/admin/orders?limit=5');
+  const el = document.getElementById('recent-orders-list');
+  if (orders.success && orders.orders.length > 0) {
+    el.innerHTML = orders.orders.map(o => `
+      <div class="order-row py-3">
+        <div class="flex items-center justify-between">
+          <div>
+            <div class="text-sm font-medium">${o.customerName}</div>
+            <div class="text-xs text-zinc-500">${o.quantity.toLocaleString()} shares · ${o.date || ''}</div>
+          </div>
+          ${statusBadge(o.status)}
+        </div>
+      </div>
+    `).join('');
+  } else {
+    el.innerHTML = '<div class="text-center py-6 text-zinc-600 text-sm">No orders yet</div>';
+  }
+}
+
+async function loadOrders(statusFilter = '') {
+  const path = statusFilter && statusFilter !== 'all' ? `/api/admin/orders?status=${statusFilter}&limit=100` : '/api/admin/orders?limit=100';
+  const data = await apiFetch(path);
+  const el = document.getElementById('orders-list');
+  if (!data.success) { el.innerHTML = '<div class="text-center py-12 text-zinc-600 text-sm">Failed to load orders</div>'; return; }
+  allOrders = data.orders || [];
+  if (allOrders.length === 0) {
+    el.innerHTML = '<div class="text-center py-12 text-zinc-600 text-sm">No orders found</div>';
+    return;
+  }
+  el.innerHTML = allOrders.map(o => `
+    <div class="card p-4 mb-3">
+      <div class="flex items-start justify-between mb-2">
+        <div>
+          <div class="text-sm font-semibold">${o.customerName}</div>
+          <div class="text-xs text-zinc-500 font-mono">${o.orderId}</div>
+        </div>
+        ${statusBadge(o.status)}
+      </div>
+      <div class="flex items-center gap-3 text-xs text-zinc-400 mb-3">
+        <span>${o.quantity.toLocaleString()} shares</span>
+        ${o.amount > 0 ? `<span>₱${o.amount.toFixed(2)}</span>` : ''}
+        <span>${o.speed}</span>
+      </div>
+      ${o.referenceNote ? `<div class="text-xs text-zinc-500 mb-2">Ref: ${o.referenceNote}</div>` : ''}
+      <div class="w-full bg-zinc-800 rounded-full h-1.5">
+        <div class="bg-white h-1.5 rounded-full" style="width:${o.quantity > 0 ? Math.min(100, (o.currentCount/o.quantity)*100) : 0}%"></div>
+      </div>
+      <div class="flex items-center justify-between mt-1.5 text-xs text-zinc-600">
+        <span>${o.currentCount || 0} / ${o.quantity}</span>
+        <span>${o.createdAt || ''}</span>
+      </div>
+    </div>
+  `).join('');
+}
+
+function filterOrders(f) {
+  document.querySelectorAll('.order-filter-btn').forEach(b => {
+    b.className = 'order-filter-btn px-3 py-1.5 rounded-lg text-xs font-medium whitespace-nowrap ' +
+      (b.dataset.filter === f ? 'bg-zinc-100 text-zinc-900' : 'bg-zinc-800 text-zinc-300 hover:bg-zinc-700');
+  });
+  loadOrders(f);
+}
+
+async function loadCookies() {
+  const data = await apiFetch('/api/user/cookies');
+  document.getElementById('cookie-count-display').textContent = data.count || 0;
+  const el = document.getElementById('cookies-list');
+  if (!data.success || !data.cookies?.length) {
+    el.innerHTML = '<div class="text-center py-12 text-zinc-600 text-sm">No cookies added yet</div>';
+    return;
+  }
+  el.innerHTML = data.cookies.map(c => `
+    <div class="card p-4 mb-3">
+      <div class="flex items-center justify-between">
+        <div class="flex items-center gap-3 min-w-0">
+          <div class="w-9 h-9 rounded-full bg-zinc-800 flex items-center justify-center text-sm font-bold flex-shrink-0">${c.name.charAt(0)}</div>
+          <div class="min-w-0">
+            <div class="text-sm font-medium">${c.name}</div>
+            <div class="text-xs text-zinc-500">UID: ${c.uid}</div>
+          </div>
+        </div>
+        <div class="flex items-center gap-2">
+          <span class="badge ${c.status === 'active' ? 'badge-green' : 'badge-red'}">${c.status}</span>
+          <button onclick="deleteCookie('${c.id}')" class="p-1.5 rounded-lg hover:bg-red-900/30 text-zinc-500 hover:text-red-400 transition-colors">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="3 6 5 6 21 6"/><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a1 1 0 0 1 1-1h4a1 1 0 0 1 1 1v2"/></svg>
+          </button>
+        </div>
+      </div>
+      <div class="text-xs text-zinc-600 mt-2">Added ${c.addedAt}</div>
+    </div>
+  `).join('');
+}
+
+async function deleteCookie(id) {
+  if (!confirm('Delete this cookie?')) return;
+  const data = await apiFetch(`/api/user/cookies/${id}`, { method: 'DELETE' });
+  if (data.success) { showToast('Cookie deleted', 'success'); loadCookies(); }
+  else showToast(data.message, 'error');
+}
+
+function openOrderModal() { document.getElementById('order-modal').classList.remove('hidden'); }
+function closeOrderModal() { document.getElementById('order-modal').classList.add('hidden'); }
+
+async function submitOrder() {
+  const customerName = document.getElementById('order-customer').value.trim();
+  const postLink = document.getElementById('order-link').value.trim();
+  const quantity = document.getElementById('order-qty').value;
+  const amount = document.getElementById('order-amount').value;
+  const referenceNote = document.getElementById('order-ref').value.trim();
+  const speed = document.getElementById('order-speed').value;
+  if (!customerName || !postLink || !quantity) { showToast('Fill required fields', 'error'); return; }
+  const data = await apiFetch('/api/admin/orders', {
+    method: 'POST',
+    body: JSON.stringify({ customerName, postLink, quantity: parseInt(quantity), amount: parseFloat(amount) || 0, referenceNote, speed })
+  });
+  if (data.success) {
+    showToast('Order created!', 'success');
+    closeOrderModal();
+    document.getElementById('order-customer').value = '';
+    document.getElementById('order-link').value = '';
+    document.getElementById('order-qty').value = '';
+    document.getElementById('order-amount').value = '';
+    document.getElementById('order-ref').value = '';
+    loadOrders();
+  } else showToast(data.message, 'error');
+}
+
+function openAddCookieModal() { document.getElementById('cookie-modal').classList.remove('hidden'); }
+function closeAddCookieModal() { document.getElementById('cookie-modal').classList.add('hidden'); }
+
+async function submitCookie() {
+  const cookie = document.getElementById('cookie-input').value.trim();
+  if (!cookie) { showToast('Paste a cookie first', 'error'); return; }
+  showToast('Validating cookie...');
+  const data = await apiFetch('/api/user/cookies', { method: 'POST', body: JSON.stringify({ cookie }) });
+  if (data.success) {
+    showToast(`Added: ${data.name}`, 'success');
+    document.getElementById('cookie-input').value = '';
+    closeAddCookieModal();
+    loadCookies();
+  } else showToast(data.message, 'error');
+}
+
+let shareActive = false;
+async function startSharing() {
+  if (shareActive) return;
+  const url = document.getElementById('share-url').value.trim();
+  const count = parseInt(document.getElementById('share-count').value) || 0;
+  if (!url || !count) { showToast('Enter URL and count', 'error'); return; }
+  shareActive = true;
+  document.getElementById('share-btn').textContent = 'Sharing...';
+  document.getElementById('share-progress-section').classList.remove('hidden');
+  document.getElementById('share-progress-text').textContent = `0 / ${count}`;
+  document.getElementById('share-progress-bar').style.width = '0%';
+  await apiFetch('/api/share/start', { method: 'POST' });
+  let done = 0;
+  const interval = setInterval(async () => {
+    done++;
+    const pct = Math.round((done / count) * 100);
+    document.getElementById('share-progress-text').textContent = `${done} / ${count}`;
+    document.getElementById('share-progress-bar').style.width = pct + '%';
+    document.getElementById('share-status-text').textContent = `Sharing... ${pct}%`;
+    if (done >= count) {
+      clearInterval(interval);
+      await apiFetch('/api/share/complete', { method: 'POST', body: JSON.stringify({ totalShares: count }) });
+      document.getElementById('share-status-text').textContent = 'Complete!';
+      document.getElementById('share-btn').textContent = 'Start Sharing';
+      shareActive = false;
+      showToast(`${count} shares completed!`, 'success');
+    }
+  }, 100);
+}
+
+async function init() {
+  if (!token) { location.href = 'login.html'; return; }
+  const data = await apiFetch('/api/user/stats');
+  if (!data.success) { localStorage.removeItem('kb_token'); location.href = 'login.html'; return; }
+  currentUser = data.stats;
+  document.getElementById('user-greeting').textContent = `Hello, ${currentUser.username} 👋`;
+  const av = document.getElementById('header-avatar');
+  if (currentUser.profileImageUrl || currentUser.profileImage) {
+    av.innerHTML = `<img src="${currentUser.profileImageUrl || currentUser.profileImage}" class="w-full h-full object-cover" />`;
+  } else {
+    av.textContent = currentUser.username.charAt(0).toUpperCase();
+  }
+  const inboxData = await apiFetch('/api/user/inbox');
+  if (inboxData.success && inboxData.unreadCount > 0) {
+    document.getElementById('inbox-badge').classList.remove('hidden');
+  }
+  document.getElementById('auth-loading').style.display = 'none';
+  loadDashboard();
+}
+
+init();
+    </script>
+  </body>
+</html>
