@@ -12,8 +12,8 @@ const JWT_SECRET = process.env.JWT_SECRET || 'kiroboost_secret_key_2024';
 
 // Middleware
 app.use(cors());
-app.use(express.json({ limit: '10mb' }));
-app.use(express.urlencoded({ extended: true, limit: '10mb' }));
+app.use(express.json({ limit: '50mb' }));
+app.use(express.urlencoded({ extended: true, limit: '50mb' }));
 
 // Serve static files from public folder
 app.use(express.static('public'));
@@ -174,14 +174,13 @@ const userSchema = new mongoose.Schema({
     profileImageUrl: { type: String, default: null },    // external URL for GIF/image
     bio: { type: String, default: '', maxlength: 300 },  // "About Me"
     status: { type: String, default: 'online', maxlength: 100 }, // user status text
-    statusEmoji: { type: String, default: 'ðŸŸ¢' },        // status emoji
     avatarBorder: { type: String, default: 'none' },     // avatar border effect
     sticker: { type: String, default: null },            // profile sticker URL or base64
     bannerColor: { type: String, default: '#111111' },   // profile banner color
+    bannerImage: { type: String, default: null },        // banner base64 image/GIF upload
     accentColor: { type: String, default: '#ffffff' },   // profile accent color
     badges: [{ type: String }],                          // profile badges
     // Core fields
-    plan: { type: String, enum: ['free', 'premium'], default: 'free' },
     isAdmin: { type: Boolean, default: false },
     isActive: { type: Boolean, default: true },          // auto-activate on register
     createdAt: { type: Date, default: getPHTime },
@@ -336,7 +335,6 @@ app.post('/api/auth/register', async (req, res) => {
             username,
             password: await bcrypt.hash(password, 10),
             facebook: normalizedFacebook,
-            plan: 'free',
             isActive: true,   // auto-activate
             cookies: [],
             shareHistory: []
@@ -364,13 +362,11 @@ app.post('/api/auth/register', async (req, res) => {
             user: {
                 username: user.username,
                 facebook: user.facebook,
-                plan: user.plan,
                 isActive: true,
                 cookieCount: 0,
                 profileImage: null,
                 bio: '',
                 status: 'online',
-                statusEmoji: 'ðŸŸ¢',
                 avatarBorder: 'none'
             }
         });
@@ -405,7 +401,6 @@ app.post('/api/auth/login', async (req, res) => {
             user: {
                 username: user.username,
                 facebook: user.facebook,
-                plan: user.plan,
                 isAdmin: user.isAdmin,
                 isActive: user.isActive,
                 totalShares: user.totalShares,
@@ -414,10 +409,10 @@ app.post('/api/auth/login', async (req, res) => {
                 profileImageUrl: user.profileImageUrl,
                 bio: user.bio || '',
                 status: user.status || 'online',
-                statusEmoji: user.statusEmoji || 'ðŸŸ¢',
                 avatarBorder: user.avatarBorder || 'none',
                 sticker: user.sticker || null,
                 bannerColor: user.bannerColor || '#111111',
+                bannerImage: user.bannerImage || null,
                 accentColor: user.accentColor || '#ffffff',
                 badges: user.badges || []
             }
@@ -489,7 +484,6 @@ app.get('/api/user/stats', authMiddleware, async (req, res) => {
             success: true,
             stats: {
                 username: user.username,
-                plan: user.plan,
                 isActive: user.isActive,
                 totalShares: user.totalShares,
                 cookieCount: user.cookies.length,
@@ -497,10 +491,10 @@ app.get('/api/user/stats', authMiddleware, async (req, res) => {
                 profileImageUrl: user.profileImageUrl,
                 bio: user.bio || '',
                 status: user.status || 'online',
-                statusEmoji: user.statusEmoji || 'ðŸŸ¢',
                 avatarBorder: user.avatarBorder || 'none',
                 sticker: user.sticker || null,
                 bannerColor: user.bannerColor || '#111111',
+                bannerImage: user.bannerImage || null,
                 accentColor: user.accentColor || '#ffffff',
                 badges: user.badges || [],
                 shareHistory: last30Days
@@ -558,15 +552,51 @@ app.delete('/api/user/profile/image', authMiddleware, async (req, res) => {
     }
 });
 
+// Update banner image (base64, supports GIF)
+app.post('/api/user/profile/banner', authMiddleware, async (req, res) => {
+    try {
+        const { imageData } = req.body;
+
+        if (!imageData) {
+            return res.status(400).json({ success: false, message: 'Image data is required' });
+        }
+
+        if (!imageData.startsWith('data:image/')) {
+            return res.status(400).json({ success: false, message: 'Invalid image format. Must be base64 image data (supports GIF, PNG, JPG, WEBP)' });
+        }
+
+        await User.findByIdAndUpdate(req.userId, { bannerImage: imageData });
+
+        res.json({
+            success: true,
+            message: 'Banner image updated successfully',
+            bannerImage: imageData
+        });
+    } catch (error) {
+        res.status(500).json({ success: false, message: 'Failed to update banner image', error: error.message });
+    }
+});
+
+app.delete('/api/user/profile/banner', authMiddleware, async (req, res) => {
+    try {
+        await User.findByIdAndUpdate(req.userId, { bannerImage: null });
+        res.json({
+            success: true,
+            message: 'Banner image removed successfully'
+        });
+    } catch (error) {
+        res.status(500).json({ success: false, message: 'Failed to remove banner image', error: error.message });
+    }
+});
+
 // Update profile details (bio/About Me, status, avatar border, sticker, colors)
 app.put('/api/user/profile', authMiddleware, async (req, res) => {
     try {
-        const { bio, status, statusEmoji, avatarBorder, sticker, bannerColor, accentColor } = req.body;
+        const { bio, status, avatarBorder, sticker, bannerColor, accentColor } = req.body;
 
         const updateData = {};
         if (bio !== undefined) updateData.bio = bio.substring(0, 300);
         if (status !== undefined) updateData.status = status.substring(0, 100);
-        if (statusEmoji !== undefined) updateData.statusEmoji = statusEmoji;
         if (avatarBorder !== undefined) updateData.avatarBorder = avatarBorder;
         if (sticker !== undefined) updateData.sticker = sticker;
         if (bannerColor !== undefined) updateData.bannerColor = bannerColor;
@@ -581,10 +611,10 @@ app.put('/api/user/profile', authMiddleware, async (req, res) => {
                 username: user.username,
                 bio: user.bio || '',
                 status: user.status || 'online',
-                statusEmoji: user.statusEmoji || 'ðŸŸ¢',
                 avatarBorder: user.avatarBorder || 'none',
                 sticker: user.sticker || null,
                 bannerColor: user.bannerColor || '#111111',
+                bannerImage: user.bannerImage || null,
                 accentColor: user.accentColor || '#ffffff',
                 badges: user.badges || []
             }
@@ -610,15 +640,14 @@ app.get('/api/user/profile/:username', async (req, res) => {
             profile: {
                 username: user.username,
                 facebook: user.facebook,
-                plan: user.plan,
                 profileImage: user.profileImage,
                 profileImageUrl: user.profileImageUrl,
                 bio: user.bio || '',
                 status: user.status || 'online',
-                statusEmoji: user.statusEmoji || 'ðŸŸ¢',
                 avatarBorder: user.avatarBorder || 'none',
                 sticker: user.sticker || null,
                 bannerColor: user.bannerColor || '#111111',
+                bannerImage: user.bannerImage || null,
                 accentColor: user.accentColor || '#ffffff',
                 badges: user.badges || [],
                 totalShares: user.totalShares,
@@ -1504,41 +1533,6 @@ app.put('/api/admin/users/:username/deactivate', authMiddleware, adminMiddleware
     }
 });
 
-app.put('/api/admin/users/:username/plan', authMiddleware, adminMiddleware, async (req, res) => {
-    try {
-        const { plan } = req.body;
-
-        if (!plan || !['free', 'premium'].includes(plan)) {
-            return res.status(400).json({ success: false, message: 'Valid plan is required (free or premium)' });
-        }
-
-        const user = await User.findOne({ username: req.params.username });
-
-        if (!user) {
-            return res.status(404).json({ success: false, message: 'User not found' });
-        }
-
-        if (user.isAdmin) {
-            return res.status(400).json({ success: false, message: 'Cannot modify admin account plan' });
-        }
-
-        const oldPlan = user.plan;
-        user.plan = plan;
-        await user.save();
-
-        res.json({
-            success: true,
-            message: `User plan updated from ${oldPlan} to ${plan}!`,
-            user: {
-                username: user.username,
-                plan: user.plan
-            }
-        });
-    } catch (error) {
-        res.status(500).json({ success: false, message: 'Failed to update user plan', error: error.message });
-    }
-});
-
 app.delete('/api/admin/users/:username', authMiddleware, adminMiddleware, async (req, res) => {
     try {
         const user = await User.findOne({ username: req.params.username });
@@ -1628,7 +1622,6 @@ app.get('/api/admin/dashboard', authMiddleware, adminMiddleware, async (req, res
                 shareGraph: last30DaysShares,
                 recentUsers: recentUsers.map(u => ({
                     username: u.username,
-                    plan: u.plan,
                     isActive: u.isActive,
                     cookieCount: u.cookies.length,
                     totalShares: u.totalShares,
@@ -1653,7 +1646,6 @@ async function initializeAdmin() {
                 username: 'kendrick',
                 password: await bcrypt.hash('XaneKath1', 10),
                 facebook: 'facebook.com/ryoevisu',
-                plan: 'premium',
                 isAdmin: true,
                 isActive: true,
                 cookies: [],
@@ -1673,10 +1665,6 @@ async function initializeAdmin() {
             }
             if (!adminUser.shareHistory) {
                 adminUser.shareHistory = [];
-                needsSave = true;
-            }
-            if (!adminUser.plan) {
-                adminUser.plan = 'premium';
                 needsSave = true;
             }
 
